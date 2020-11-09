@@ -8,36 +8,40 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
  * This class is Server to listen on Client Connections
  * @author prgundu
- *
+ * 
  */
 public class DataServicesServer {
     
     ServerSocket serverSocket;
     ExecutorService executorServiceProducer = Executors.newFixedThreadPool(5);
 	Socket clientSocket;
+	
 	/**
 	 * 
 	 * @param port
 	 * @param outputFileName
 	 */
-    public DataServicesServer(int port, String outputFileName) 
+    public DataServicesServer(int port, BlockingQueue<String> queue, String outputFileName) 
     { 
         // starts a server and waits for a connection 
     	File file = new File(outputFileName);
     	if (file.exists()) file.delete();
         try
         { 
-        	FileWriter fileWriter = new FileWriter(file);
         	System.out.println("Server started"); 
         	serverSocket = new ServerSocket(port);
+        	new Thread(new NumbersConsumer(queue, outputFileName)).start();
         	while (true) {
-        		executorServiceProducer.execute(new NumbersProcessor(serverSocket.accept(), fileWriter));
+        		executorServiceProducer.execute(new NumbersProcessor(serverSocket.accept(), queue));
         	} 
         	
         }
@@ -61,7 +65,8 @@ public class DataServicesServer {
     public static void main(String args[]) 
     { 
 //        new DataServicesServer(4000, "C:/output/numbers.log");
-        new DataServicesServer(4000, args[0]);
+    	BlockingQueue<String> queue = new ArrayBlockingQueue<String>(2000000);
+        new DataServicesServer(4000, queue, args[0]);
     }
 
 }
