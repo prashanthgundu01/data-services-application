@@ -30,15 +30,15 @@ public class DataServicesClient {
 	}
 	
 	/**
-	 * This method is to send generated random numbers to server
+	 * This method is to send generated random numbers to server 
 	 */
 	public void sendGeneratedRandomNumbersToServer() {
-		List<String> strA = new ArrayList<String>();
-		for(int i=0;i<100000;i++) {
-			strA.add(String.format("%09d", ThreadLocalRandom.current().nextInt(1000000000)));
+		List<String> numbers = new ArrayList<String>();
+		for(int i=0;i<200000;i++) {
+			numbers.add(String.format("%09d", ThreadLocalRandom.current().nextInt(1000000000)));
 		}
 		try {
-			objectOutputStream.writeObject(strA);
+			objectOutputStream.writeObject(numbers);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
