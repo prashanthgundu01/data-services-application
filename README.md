@@ -3,29 +3,24 @@
 #Table of Contents
 1.	Solution Approach
 2.	Tests
-3.	Repository directory structure
+3.	Assumptions
 4.	Challenge Description
 # Solution Approach
 The main class is in ‘/src/main/java/data.services.code.challenge/DataServicesServer.java’. The entire solution uses ‘java.io.*’, ‘java.net.*’, ‘java.util.*’. No other dependencies and build.gradle is also available.
 The server was limited to a Fixed Thread Pool by using Executors package. Server doesn’t allow any more than 5 clients to connect at a time. Server has a client handler class which handles and reads the input streams for each clients and responding to inputs dynamically as they come in. 
-Initially, started using the Client input streams directly fed into the CopyOnWriteArrayList and running it. However the process was quite slow for 200K+ records and also taking more memory. After that, implemented different blocking queues from java.util.concurrent package, in order to be more thread safe, and to avoid interleaving of threads but still the performance is poor. The blocking queue's capacity is set to 2M, however it is adjustable under `main`. The blocking queue is fed in by NumbersProcessor.java class. 
-
-Unfortunately processing speed wasn't much approved with this method. Test results below. The numbers.log file is saved in the `output` folder in c:\ drive. DataServicesServer.java is main application and need to pass an argument for the output file(numbers.log) file creation.
+Initially, started using the Client input streams directly fed into the CopyOnWriteArrayList and running it. However the process was quite slow for 200K+ records and also taking more memory. After that, implemented different blocking queues from java.util.concurrent package, in order to be more thread safe, and to avoid interleaving of threads but still the performance is poor. The blocking queue's capacity is set to 2M, however it is adjustable under `main`. The blocking queue is fed in by NumbersProcessor.java class. Test results below. The numbers.log file is saved in the `output` folder in c:\ drive. DataServicesServer.java is main application and need to pass an argument for the output file(numbers.log) file creation.
 
 ## Future Directions
-Maybe having a concurrent and parallel processing and having multiple inner threads that simultaneously consumes from the data structure would work much better. Overall found that consuming of the data structure and finding out uniques was taking more time. 
+Maybe having a concurrent and parallel processing and having multiple inner threads that simultaneously consumes from the data structure would work much better. Overall found that consuming of the data structure and finding out uniques was taking more time. This can be fine tuned so that application can run more faster.
  # Tests
-A "dummy" client is provided in the test folder. Along with some tests (no assertions).
- 
-    Max 5 Clients                           : Successful
-    Handling leading zeros                  : Successful
-    numbers.log created anew                : Successful
-    No duplicates in log file               : Successful
-    Non-conforming Data/Client disconnect   : Successful
-    Summary standard output                 : Successful
-    terminate / system shutdown             : Successful
+DataServicesServerTest.java is the Test class in Test package used to invoke 5 clients. DataServicesServer.java has to be running so that it can accept client connections and receive data sent by client. DataServiceServer.java need a program argument to be passed to create the file(numbers.log) in a specified folder ex: C:/output/numbers.log. 
+java -D C:/output/numbers.log DataServiceServer.java.
+
 2M numbers across 5 clients test, Specs:
 * 0.4 seconds for 2M numbers to get in to queue.
+
+# Assumptions
+A higher configuration machine may have a chance of increasing the speed of the process.
 
 # References
 1.	http://www.baeldung.com/a-guide-to-java-sockets
